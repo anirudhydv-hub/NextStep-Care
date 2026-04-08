@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Profile - NextStep Care</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Light Sky & Glass Theme Overrides */
+        body { background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); font-family: 'Inter', sans-serif; min-height: 100vh; margin: 0; }
+        .navbar { background: rgba(255, 255, 255, 0.6) !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.8) !important; box-shadow: 0 4px 20px rgba(30, 60, 114, 0.05); }
+        .nav-brand { color: #1e3c72 !important; font-weight: 700; }
+        
+        .content-section, .detail-card, .med-card-glass {
+            background: rgba(255, 255, 255, 0.65) !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.8) !important; box-shadow: 0 15px 35px rgba(30, 60, 114, 0.05) !important; border-radius: 20px !important;
+        }
+        
+        h2, h3, .detail-card h3 { color: #1e3c72 !important; }
+        p, .detail-card p { color: #334155 !important; }
+        
+        .back-btn { background: rgba(255, 255, 255, 0.8) !important; color: #1e3c72 !important; border: 1px solid #1e3c72 !important; transition: all 0.3s; }
+        .back-btn:hover { background: #1e3c72 !important; color: white !important; }
+        
+        .profile-tabs { border-bottom: 2px solid rgba(255, 255, 255, 0.5); padding-bottom: 10px; display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; }
+        .tab-btn { background: rgba(255,255,255,0.4); border: 1px solid rgba(255,255,255,0.5); padding: 10px 20px; font-size: 15px; cursor: pointer; color: #475569; font-weight: 600; border-radius: 12px; transition: 0.3s; }
+        .tab-btn:hover { background: rgba(255,255,255,0.8); color: #1e3c72; }
+        .tab-btn.active { background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; border: none; box-shadow: 0 4px 10px rgba(30,60,114,0.2); }
+        
+        .tab-pane { display: none; padding-top: 10px; animation: fadeIn 0.4s ease-in-out;}
+        .tab-pane.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;}
+        .med-card-glass { padding: 20px; display: flex; flex-direction: column; gap: 8px; }
+
+        @keyframes slideInUp { from { transform: translateY(100px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-brand">
+           <img src="logo.png" alt="Company Logo" style="max-width:25%; height:25%; margin-right: 10px;">NextStep Care
+        </div>
+        <div class="nav-user" style="display: flex; align-items: center; gap: 15px;">
+            <span id="doctorNameHeader" style="font-weight: 600; color: #1e293b;">Doctor</span>
+            <a href="doctor-dashboard.html" class="back-btn" style="text-decoration: none; padding: 8px 15px; border-radius: 10px; font-weight: 600;"><i class="fas fa-arrow-left"></i> Back</a>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 1000px; margin: 0 auto; padding: 20px;">
+        <div class="content-section" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 25px;">
+            <div class="profile-info">
+                <h2 id="patientName" style="font-size: 2rem; margin-bottom: 5px;">Loading...</h2>
+                <p><i class="fas fa-id-card" style="color: #38bdf8;"></i> <span id="patientId"></span> &nbsp;|&nbsp; <i class="fas fa-user-clock" style="color: #38bdf8;"></i> Age: <span id="patientAge"></span> &nbsp;|&nbsp; <i class="fas fa-procedures" style="color: #38bdf8;"></i> <span id="patientDisease"></span></p>
+                <div id="healthStatus" class="status" style="display: inline-block; margin-top: 12px; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 0.85rem; text-transform: uppercase;"></div>
+            </div>
+            <div>
+                <button onclick="document.getElementById('appointmentModal').style.display='flex'" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%) !important; color: white; padding: 12px 20px; border-radius: 12px; font-weight: bold; border: none; box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3); cursor: pointer; transition: all 0.3s;">
+                    <i class="fas fa-calendar-plus"></i> Schedule Appointment
+                </button>
+            </div>
+        </div>
+
+        <div class="profile-tabs">
+            <button class="tab-btn active" data-tab="details"><i class="fas fa-notes-medical"></i> Vitals Overview</button>
+            <button class="tab-btn" data-tab="medicines"><i class="fas fa-pills"></i> Prescriptions</button>
+            <button class="tab-btn" data-tab="charts"><i class="fas fa-chart-line"></i> Recovery Charts</button>
+        </div>
+
+        <div class="content-section" style="background: rgba(255,255,255,0.4) !important; border: none !important; box-shadow: none !important; padding: 0;">
+            <div id="details" class="tab-pane active">
+                <div class="detail-grid">
+                    <div class="detail-card">
+                        <p style="font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;">Blood Pressure</p>
+                        <h3 id="patBP" style="font-size: 1.8rem;">--</h3>
+                    </div>
+                    <div class="detail-card">
+                        <p style="font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;">Blood Sugar</p>
+                        <h3 style="font-size: 1.8rem;"><span id="patSugar">--</span> <span style="font-size: 1.1rem; font-weight: normal; color: #64748b;">mg/dL</span></h3>
+                    </div>
+                    <div class="detail-card">
+                        <p style="font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;">Hemoglobin</p>
+                        <h3 style="font-size: 1.8rem;"><span id="patHemo">--</span> <span style="font-size: 1.1rem; font-weight: normal; color: #64748b;">g/dL</span></h3>
+                    </div>
+                    <div class="detail-card">
+                        <p style="font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;">Next Appointment</p>
+                        <h3 id="patAppt" style="font-size: 1.4rem; color: #0284c7 !important; margin-top: 5px;">--</h3>
+                    </div>
+                    
+                    <div class="detail-card" style="grid-column: 1 / -1; padding: 25px;">
+                        <p style="font-size: 0.95rem; margin-bottom: 10px; font-weight: 600; color: #1e3c72;"><i class="fas fa-head-side-cough"></i> Recent Symptoms & Notes</p>
+                        <div id="patSymptomsContainer" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;">
+                            </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="medicines" class="tab-pane">
+                <div id="medicineListContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
+            </div>
+
+            <div id="charts" class="tab-pane">
+                <div class="detail-card" style="padding: 30px;">
+                    <p style="color: #475569; font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;">Heart Rate (bpm)</p>
+                    <div style="height: 180px; margin-bottom: 30px;"><canvas id="chartHR"></canvas></div>
+                    <p style="color: #475569; font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;">Blood Pressure (mmHg)</p>
+                    <div style="height: 180px; margin-bottom: 30px;"><canvas id="chartBP"></canvas></div>
+                    <p style="color: #475569; font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;">Blood Sugar (mg/dL)</p>
+                    <div style="height: 180px;"><canvas id="chartSugar"></canvas></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="appointmentModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.4); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
+        <div style="background: rgba(255, 255, 255, 0.95); padding: 30px; border-radius: 24px; width: 90%; max-width: 400px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.8);">
+            <h3 style="margin-bottom: 20px; color: #1e3c72; font-size: 1.5rem;"><i class="fas fa-calendar-alt"></i> Set Appointment</h3>
+            <form id="appointmentForm">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; color: #334155; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem;">Select Date</label>
+                    <input type="date" id="apptDate" required style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 15px; color: #1e293b; background: white; box-sizing: border-box;">
+                </div>
+                <div style="margin-bottom: 25px;">
+                    <label style="display: block; color: #334155; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem;">Select Time Slot</label>
+                    <select id="apptTime" required style="width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 12px; font-size: 15px; color: #1e293b; background: white; box-sizing: border-box; cursor: pointer;">
+                        <option value="">Choose a time...</option>
+                        <option value="09:00 AM">09:00 AM</option>
+                        <option value="10:30 AM">10:30 AM</option>
+                        <option value="01:00 PM">01:00 PM</option>
+                        <option value="03:30 PM">03:30 PM</option>
+                        <option value="05:00 PM">05:00 PM</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" onclick="document.getElementById('appointmentModal').style.display='none'" style="background: #e2e8f0 !important; color: #475569 !important; flex: 1; padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer;">Cancel</button>
+                    <button type="submit" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%) !important; color: white !important; flex: 1.5; padding: 12px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer;">Confirm & Send</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="toastNotification" style="display: none; position: fixed; bottom: 30px; right: 30px; background: #10b981; color: white; padding: 15px 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); font-weight: 600; z-index: 1001; align-items: center; gap: 12px; animation: slideInUp 0.4s ease-out;">
+        <i class="fas fa-check-circle" style="font-size: 1.2rem;"></i> <span>Appointment msg send to patient</span>
+    </div>
+
+    <script>
+        const observer = new MutationObserver(() => {
+            document.querySelectorAll('#medicineListContainer > div').forEach(div => {
+                div.classList.add('med-card-glass'); div.style.border = "none"; div.style.background = ""; 
+            });
+        });
+        window.addEventListener('DOMContentLoaded', () => {
+            const medContainer = document.getElementById('medicineListContainer');
+            if(medContainer) observer.observe(medContainer, { childList: true });
+            const apptForm = document.getElementById('appointmentForm');
+            if (apptForm) {
+                apptForm.addEventListener('submit', function(e) {
+                    e.preventDefault(); 
+                    document.getElementById('appointmentModal').style.display = 'none';
+                    const toast = document.getElementById('toastNotification');
+                    toast.style.display = 'flex';
+                    setTimeout(() => { toast.style.display = 'none'; }, 3500);
+                    this.reset();
+                });
+            }
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html>
