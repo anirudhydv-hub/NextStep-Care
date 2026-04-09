@@ -8,34 +8,20 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Light Sky & Glass Theme Overrides */
         body { background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); font-family: 'Inter', sans-serif; min-height: 100vh; margin: 0; }
         .navbar { background: rgba(255, 255, 255, 0.6) !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.8) !important; box-shadow: 0 4px 20px rgba(30, 60, 114, 0.05); }
         .nav-brand { color: #1e3c72 !important; font-weight: 700; }
         .mobile-layout { background-color: transparent; }
-        
         .secondary-nav { display: flex; background: rgba(255, 255, 255, 0.5); padding: 0 10px; border-bottom: 1px solid rgba(255, 255, 255, 0.8); overflow-x: auto; backdrop-filter: blur(10px); }
         .secondary-nav a { padding: 15px 20px; color: #475569; text-decoration: none; font-weight: 600; font-size: 0.95rem; white-space: nowrap; border-bottom: 3px solid transparent; transition: 0.3s; }
         .secondary-nav a.active { color: #1e3c72; border-bottom-color: #1e3c72; }
-        
-        .action-card, .content-section, .med-card {
-            background: rgba(255, 255, 255, 0.65) !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.8) !important; box-shadow: 0 10px 25px rgba(30, 60, 114, 0.05) !important; border-radius: 16px !important;
-        }
-        
+        .action-card, .content-section, .med-card { background: rgba(255, 255, 255, 0.65) !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.8) !important; box-shadow: 0 10px 25px rgba(30, 60, 114, 0.05) !important; border-radius: 16px !important; }
         .action-card.blue { background: rgba(224, 242, 254, 0.8) !important; color: #0284c7; }
         .action-card.green { background: rgba(220, 252, 231, 0.8) !important; color: #16a34a; }
         .action-card.red { background: rgba(254, 226, 226, 0.8) !important; color: #dc2626; }
-        
         h3 { color: #1e3c72; }
         p { color: #334155; }
-        
-        .modal-glass {
-            background: rgba(255, 255, 255, 0.95) !important;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.8);
-            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
-        }
+        .modal-glass { background: rgba(255, 255, 255, 0.95) !important; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 25px 50px rgba(0,0,0,0.15); }
     </style>
 </head>
 <body class="mobile-layout">
@@ -43,10 +29,13 @@
      <nav class="navbar">
         <div class="nav-brand" style="display: flex; align-items: center;">
             <img src="logo.png" alt="Company Logo" style="max-width: 20%; height:20%; margin-right: 12px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
-            <span style="color: #1e3c72; font-weight: 700;">NextStep Care</span>
+            <span data-i18n="nav_brand" style="color: #1e3c72; font-weight: 700;">NextStep Care</span>
         </div>
         <div class="nav-user" style="display: flex; align-items: center; gap: 15px;">
-            <span id="patientName" style="font-weight: 600; color: #1e293b;">Ayush Sharma</span>
+            
+            <button id="langToggleBtn" onclick="toggleLanguage()" class="lang-toggle-btn">EN</button>
+
+            <span id="patientName" style="font-weight: 600; color: #1e293b;">Loading...</span>
             <button onclick="logout()" class="logout-btn" style="background: linear-gradient(135deg, #e11d48 0%, #be123c 100%); padding: 6px 12px; border-radius: 10px; border:none; color:white; cursor:pointer; box-shadow: 0 4px 10px rgba(225, 29, 72, 0.2);">
                 <i class="fas fa-sign-out-alt"></i>
             </button>
@@ -54,8 +43,10 @@
     </nav>
 
     <div class="secondary-nav">
-        <a href="#" class="active" onclick="switchTab('dashboard')"><i class="fas fa-th-large"></i> Dashboard</a>
-        <a href="#" onclick="switchTab('careplan')"><i class="fas fa-utensils"></i> Diet & Care</a>
+        <a href="#" class="active" onclick="switchTab('dashboard')" data-i18n="tab_dashboard"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="#" onclick="switchTab('careplan')" data-i18n="tab_diet"><i class="fas fa-utensils"></i> Diet & Care</a>
+        <a href="#" onclick="switchTab('subscription')" data-i18n="tab_plans"><i class="fas fa-crown" style="color:#f59e0b;"></i> Plans</a>
+        <a href="#" onclick="switchTab('profile')" data-i18n="tab_profile"><i class="fas fa-user-circle"></i> Profile Check</a>
     </div>
 
     <main class="main-content" style="max-width: 800px; margin: 0 auto; padding: 20px;">
@@ -67,20 +58,20 @@
 
         <div class="action-grid">
             <div class="action-card blue" onclick="document.getElementById('logVitalsModal').style.display='flex'">
-                <i class="fas fa-notes-medical"></i><span>Update Health</span>
+                <i class="fas fa-notes-medical"></i><span data-i18n="btn_update_health">Update Health</span>
             </div>
             <div class="action-card green" onclick="switchTab('careplan')">
-                <i class="fas fa-apple-alt"></i><span>Diet Plan</span>
+                <i class="fas fa-apple-alt"></i><span data-i18n="btn_diet_plan">Diet Plan</span>
             </div>
             <div class="action-card red" onclick="triggerEmergency()">
-                <i class="fas fa-phone-alt"></i><span>Emergency</span>
+                <i class="fas fa-phone-alt"></i><span data-i18n="btn_emergency">Emergency</span>
             </div>
         </div>
 
         <div id="tab-dashboard" class="tab-content active">
             <div class="content-section">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                    <h3>Medicine Reminders</h3>
+                    <h3 data-i18n="med_reminders">Medicine Reminders</h3>
                     <span class="status stable" id="medProgressText" style="background: #dcfce7; color: #166534; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: bold;">0/0 taken</span>
                 </div>
                 <div class="progress-bar-bg" style="background: rgba(255,255,255,0.5);"><div class="progress-bar-fill" id="medProgressBar" style="background: #0284c7;"></div></div>
@@ -89,31 +80,40 @@
 
             <div class="content-section">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                    <h3>Vitals Dashboard</h3>
+                    <h3 data-i18n="vitals_dash">Vitals Dashboard</h3>
                 </div>
                 <div class="vital-row">
                     <div class="vital-icon" style="color: #0ea5e9; background: #e0f2fe;"><i class="fas fa-heartbeat"></i></div>
-                    <div class="vital-info"><p>Heart Rate</p><h4 id="dashHR">-- bpm</h4></div>
+                    <div class="vital-info"><p data-i18n="heart_rate">Heart Rate</p><h4 id="dashHR">-- bpm</h4></div>
                 </div>
                 <div class="vital-row">
                     <div class="vital-icon" style="color: #e11d48; background: #ffe4e6;"><i class="fas fa-tint"></i></div>
-                    <div class="vital-info"><p>Blood Pressure</p><h4 id="dashBP">-- mmHg</h4></div>
+                    <div class="vital-info"><p data-i18n="blood_pressure">Blood Pressure</p><h4 id="dashBP">-- mmHg</h4></div>
                 </div>
                 <div class="vital-row">
                     <div class="vital-icon" style="color: #f59e0b; background: #fef3c7;"><i class="fas fa-cubes"></i></div>
-                    <div class="vital-info"><p>Blood Sugar</p><h4 id="dashSugar">-- mg/dL</h4></div>
+                    <div class="vital-info"><p data-i18n="blood_sugar">Blood Sugar</p><h4 id="dashSugar">-- mg/dL</h4></div>
+                </div>
+                <div class="vital-row">
+                    <div class="vital-icon" style="color: #8b5cf6; background: #ede9fe;"><i class="fas fa-vial"></i></div>
+                    <div class="vital-info"><p data-i18n="hemoglobin">Hemoglobin</p><h4 id="dashHemo">-- g/dL</h4></div>
                 </div>
             </div>
 
             <div class="content-section">
-                <h3><i class="fas fa-chart-line" style="color: #0284c7;"></i> 30-Day Trends</h3>
+                <h3><i class="fas fa-chart-line" style="color: #0284c7;"></i> <span data-i18n="trends">30-Day Trends</span></h3>
                 <div style="margin-top: 20px;">
-                    <p style="color: #475569; font-size: 0.9rem; font-weight: 600;">Heart Rate</p>
+                    <p style="color: #475569; font-size: 0.9rem; font-weight: 600;" data-i18n="heart_rate">Heart Rate</p>
                     <div style="height: 150px; margin-bottom: 20px;"><canvas id="chartHR"></canvas></div>
-                    <p style="color: #475569; font-size: 0.9rem; font-weight: 600;">Blood Pressure</p>
+                    
+                    <p style="color: #475569; font-size: 0.9rem; font-weight: 600;" data-i18n="blood_pressure">Blood Pressure</p>
                     <div style="height: 150px; margin-bottom: 20px;"><canvas id="chartBP"></canvas></div>
-                    <p style="color: #475569; font-size: 0.9rem; font-weight: 600;">Blood Sugar</p>
-                    <div style="height: 150px;"><canvas id="chartSugar"></canvas></div>
+                    
+                    <p style="color: #475569; font-size: 0.9rem; font-weight: 600;" data-i18n="blood_sugar">Blood Sugar</p>
+                    <div style="height: 150px; margin-bottom: 20px;"><canvas id="chartSugar"></canvas></div>
+                    
+                    <p style="color: #475569; font-size: 0.9rem; font-weight: 600;" data-i18n="hemoglobin">Hemoglobin</p>
+                    <div style="height: 150px;"><canvas id="chartHemo"></canvas></div>
                 </div>
             </div>
         </div>
@@ -128,7 +128,62 @@
                 <p id="activityPlanContent" style="line-height: 1.6; color: #334155; font-size: 1.05rem;"></p>
             </div>
         </div>
+
+        <div id="tab-subscription" class="tab-content" style="display: none;">
+            <div class="content-section" style="text-align: center;">
+                <h2 style="color: #1e3c72; margin-bottom: 10px;">Upgrade Your Care</h2>
+                <p style="margin-bottom: 30px;">Choose a plan that fits your recovery journey.</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                    <div class="detail-card" style="padding: 30px; text-align: center; border: 1px solid #cbd5e1;">
+                        <h3>Basic Care</h3>
+                        <h2 style="font-size: 2.5rem; color: #475569; margin: 15px 0;">Free</h2>
+                        <ul style="list-style: none; padding: 0; text-align: left; margin-bottom: 20px; color: #475569;">
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: #10b981;"></i> Standard Diet Plans</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: #10b981;"></i> Vitals Tracking</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-times" style="color: #ef4444;"></i> Telemedicine Access</li>
+                        </ul>
+                        <button style="width: 100%; background: #e2e8f0; color: #475569; padding: 12px; border-radius: 10px; border: none; font-weight: bold;">Current Plan</button>
+                    </div>
+                    <div class="detail-card" style="padding: 30px; text-align: center; background: rgba(224, 242, 254, 0.8) !important; border: 2px solid #38bdf8;">
+                        <h3 style="color: #0284c7;">Premium Care</h3>
+                        <h2 style="font-size: 2.5rem; color: #0284c7; margin: 15px 0;">₹499<span style="font-size:1rem; color:#475569;">/mo</span></h2>
+                        <ul style="list-style: none; padding: 0; text-align: left; margin-bottom: 20px; color: #475569;">
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: #10b981;"></i> Advanced AI Health Insights</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: #10b981;"></i> Priority Telemedicine Booking</li>
+                            <li style="margin-bottom: 10px;"><i class="fas fa-check" style="color: #10b981;"></i> 24/7 Doctor Chat Support</li>
+                        </ul>
+                        <button style="width: 100%; background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer;">Upgrade Now</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-profile" class="tab-content" style="display: none;">
+            <div class="content-section">
+                <h3 style="color: #1e3c72; margin-bottom: 20px;"><i class="fas fa-id-card"></i> Personal & Medical Information</h3>
+                <div class="detail-grid" id="patientProfileDetails"></div>
+            </div>
+        </div>
     </main>
+
+    <div id="aiChatWidget" style="position: fixed; bottom: 20px; right: 20px; z-index: 999;">
+        <div id="chatBox" style="display: none; width: 320px; height: 400px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(16px); border: 1px solid #cbd5e1; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.15); flex-direction: column; overflow: hidden; margin-bottom: 15px;">
+            <div style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between;">
+                <span><i class="fas fa-robot"></i> Health AI Assistant</span>
+                <i class="fas fa-times" style="cursor: pointer;" onclick="toggleChat()"></i>
+            </div>
+            <div id="chatMessages" style="flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #f8fafc;">
+                <div style="background: #e2e8f0; color: #1e293b; padding: 10px 15px; border-radius: 15px 15px 15px 0; max-width: 80%; font-size: 0.9rem;">Hello! I'm your AI Assistant. How can I help you with your health today?</div>
+            </div>
+            <div style="padding: 10px; border-top: 1px solid #cbd5e1; display: flex; gap: 10px; background: white;">
+                <input type="text" id="chatInput" placeholder="Ask a health question..." style="flex: 1; padding: 10px; border-radius: 20px; border: 1px solid #cbd5e1; outline: none;">
+                <button onclick="sendChatMessage()" style="background: #0284c7; color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer;"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+        <button onclick="toggleChat()" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; width: 60px; height: 60px; border-radius: 50%; border: none; box-shadow: 0 10px 25px rgba(30,60,114,0.3); font-size: 1.5rem; cursor: pointer; float: right;">
+            <i class="fas fa-comment-medical"></i>
+        </button>
+    </div>
 
     <div id="logVitalsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15, 23, 42, 0.4); z-index: 1000; align-items: center; justify-content: center; backdrop-filter: blur(5px);">
         <div class="modal-glass" style="padding: 25px; border-radius: 20px; width: 90%; max-width: 400px;">
@@ -143,10 +198,12 @@
                 <div class="input-group" style="margin-bottom: 12px;">
                     <input type="number" id="sugar" placeholder="Blood Sugar (mg/dL)" required style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; box-sizing: border-box;">
                 </div>
-                <div class="input-group" style="margin-bottom: 20px;">
-                    <input type="text" id="symptoms" placeholder="Any symptoms? (e.g. Headache, Fever, Nausea)" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; box-sizing: border-box;">
+                <div class="input-group" style="margin-bottom: 12px;">
+                    <input type="number" step="0.1" id="hemoInput" placeholder="Hemoglobin (g/dL)" required style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; box-sizing: border-box;">
                 </div>
-                
+                <div class="input-group" style="margin-bottom: 20px;">
+                    <input type="text" id="symptoms" placeholder="Any symptoms? (e.g. Headache)" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; box-sizing: border-box;">
+                </div>
                 <div style="display: flex; gap: 10px;">
                     <button type="button" onclick="document.getElementById('logVitalsModal').style.display='none'" style="background: #e2e8f0; color: #475569; flex: 1; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer;">Cancel</button>
                     <button type="submit" style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); color: white; flex: 1.5; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer;">Save Record</button>
