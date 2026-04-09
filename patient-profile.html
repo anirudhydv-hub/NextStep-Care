@@ -8,7 +8,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* Light Sky & Glass Theme Overrides */
         body { background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); font-family: 'Inter', sans-serif; min-height: 100vh; margin: 0; }
         .navbar { background: rgba(255, 255, 255, 0.6) !important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.8) !important; box-shadow: 0 4px 20px rgba(30, 60, 114, 0.05); }
         .nav-brand { color: #1e3c72 !important; font-weight: 700; }
@@ -42,11 +41,14 @@
 <body>
     <nav class="navbar">
         <div class="nav-brand">
-           <img src="logo.png" alt="Company Logo" style="max-width:25%; height:25%; margin-right: 10px;">NextStep Care
+           <img src="logo.png" alt="Company Logo" style="max-width:25%; height:25%; margin-right: 10px;"><span data-i18n="nav_brand">NextStep Care</span>
         </div>
         <div class="nav-user" style="display: flex; align-items: center; gap: 15px;">
+            
+            <button id="langToggleBtn" onclick="toggleLanguage()" class="lang-toggle-btn">EN</button>
+
             <span id="doctorNameHeader" style="font-weight: 600; color: #1e293b;">Doctor</span>
-            <a href="doctor-dashboard.html" class="back-btn" style="text-decoration: none; padding: 8px 15px; border-radius: 10px; font-weight: 600;"><i class="fas fa-arrow-left"></i> Back</a>
+            <a href="doctor-dashboard.html" class="back-btn" style="text-decoration: none; padding: 8px 15px; border-radius: 10px; font-weight: 600;" data-i18n="back"><i class="fas fa-arrow-left"></i> Back</a>
         </div>
     </nav>
 
@@ -68,21 +70,26 @@
             <button class="tab-btn active" data-tab="details"><i class="fas fa-notes-medical"></i> Vitals Overview</button>
             <button class="tab-btn" data-tab="medicines"><i class="fas fa-pills"></i> Prescriptions</button>
             <button class="tab-btn" data-tab="charts"><i class="fas fa-chart-line"></i> Recovery Charts</button>
+            <button class="tab-btn" data-tab="telemedicine"><i class="fas fa-video"></i> Telemedicine</button>
         </div>
 
         <div class="content-section" style="background: rgba(255,255,255,0.4) !important; border: none !important; box-shadow: none !important; padding: 0;">
             <div id="details" class="tab-pane active">
                 <div class="detail-grid">
                     <div class="detail-card">
-                        <p style="font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;">Blood Pressure</p>
+                        <p style="font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;" data-i18n="heart_rate">Heart Rate</p>
+                        <h3 style="font-size: 1.8rem;"><span id="patHR">--</span> <span style="font-size: 1.1rem; font-weight: normal; color: #64748b;">bpm</span></h3>
+                    </div>
+                    <div class="detail-card">
+                        <p style="font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;" data-i18n="blood_pressure">Blood Pressure</p>
                         <h3 id="patBP" style="font-size: 1.8rem;">--</h3>
                     </div>
                     <div class="detail-card">
-                        <p style="font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;">Blood Sugar</p>
+                        <p style="font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;" data-i18n="blood_sugar">Blood Sugar</p>
                         <h3 style="font-size: 1.8rem;"><span id="patSugar">--</span> <span style="font-size: 1.1rem; font-weight: normal; color: #64748b;">mg/dL</span></h3>
                     </div>
                     <div class="detail-card">
-                        <p style="font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;">Hemoglobin</p>
+                        <p style="font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;" data-i18n="hemoglobin">Hemoglobin</p>
                         <h3 style="font-size: 1.8rem;"><span id="patHemo">--</span> <span style="font-size: 1.1rem; font-weight: normal; color: #64748b;">g/dL</span></h3>
                     </div>
                     <div class="detail-card">
@@ -92,24 +99,50 @@
                     
                     <div class="detail-card" style="grid-column: 1 / -1; padding: 25px;">
                         <p style="font-size: 0.95rem; margin-bottom: 10px; font-weight: 600; color: #1e3c72;"><i class="fas fa-head-side-cough"></i> Recent Symptoms & Notes</p>
-                        <div id="patSymptomsContainer" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;">
-                            </div>
+                        <div id="patSymptomsContainer" style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 5px;"></div>
                     </div>
                 </div>
             </div>
 
             <div id="medicines" class="tab-pane">
+                <div style="background: rgba(255,255,255,0.8); padding: 20px; border-radius: 16px; margin-bottom: 20px; border: 1px dashed #1e3c72;">
+                    <h4 style="color: #1e3c72; margin-bottom: 15px;"><i class="fas fa-plus-circle"></i> Prescribe New Medicine</h4>
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                        <input type="text" id="newMedName" placeholder="Medicine Name" style="flex:1; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                        <input type="text" id="newMedDosage" placeholder="Dosage (e.g. 500mg)" style="flex:1; padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                        <input type="time" id="newMedTime" style="padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1;">
+                        <button onclick="addNewMedicine()" style="padding: 12px 25px; border-radius: 10px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; font-weight: bold; cursor: pointer;">Add</button>
+                    </div>
+                </div>
                 <div id="medicineListContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px;"></div>
             </div>
 
             <div id="charts" class="tab-pane">
                 <div class="detail-card" style="padding: 30px;">
-                    <p style="color: #475569; font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;">Heart Rate (bpm)</p>
+                    <p style="color: #475569; font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;" data-i18n="heart_rate">Heart Rate (bpm)</p>
                     <div style="height: 180px; margin-bottom: 30px;"><canvas id="chartHR"></canvas></div>
-                    <p style="color: #475569; font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;">Blood Pressure (mmHg)</p>
+                    
+                    <p style="color: #475569; font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;" data-i18n="blood_pressure">Blood Pressure (mmHg)</p>
                     <div style="height: 180px; margin-bottom: 30px;"><canvas id="chartBP"></canvas></div>
-                    <p style="color: #475569; font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;">Blood Sugar (mg/dL)</p>
-                    <div style="height: 180px;"><canvas id="chartSugar"></canvas></div>
+                    
+                    <p style="color: #475569; font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;" data-i18n="blood_sugar">Blood Sugar (mg/dL)</p>
+                    <div style="height: 180px; margin-bottom: 30px;"><canvas id="chartSugar"></canvas></div>
+                    
+                    <p style="color: #475569; font-size: 0.95rem; margin-bottom: 5px; font-weight: 600;" data-i18n="hemoglobin">Hemoglobin (g/dL)</p>
+                    <div style="height: 180px;"><canvas id="chartHemo"></canvas></div>
+                </div>
+            </div>
+
+            <div id="telemedicine" class="tab-pane">
+                <div class="detail-card" style="padding: 40px; text-align: center;">
+                    <i class="fas fa-laptop-medical" style="font-size: 4rem; color: #0284c7; margin-bottom: 20px;"></i>
+                    <h3>Virtual Video Consultation</h3>
+                    <p style="margin-bottom: 25px;">Schedule a secure telemedicine session. The patient will receive an automated link.</p>
+                    <input type="datetime-local" id="telemedDateTime" style="padding: 12px; border-radius: 10px; border: 1px solid #cbd5e1; margin-bottom: 15px; width: 100%; max-width: 300px;">
+                    <br>
+                    <button onclick="scheduleTelemedicine()" style="background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); color: white; padding: 12px 30px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer;">
+                        <i class="fas fa-video"></i> Schedule & Notify
+                    </button>
                 </div>
             </div>
         </div>
