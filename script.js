@@ -1,10 +1,89 @@
 // ==========================================
+// CUSTOM NATIVE LANGUAGE TRANSLATOR
+// ==========================================
+const translations = {
+    en: {
+        "nav_brand": "NextStep Care",
+        "logout": "Logout",
+        "back": "Back",
+        "tab_dashboard": "Dashboard",
+        "tab_diet": "Diet & Care",
+        "tab_plans": "Plans",
+        "tab_profile": "Profile Check",
+        "btn_update_health": "Update Health",
+        "btn_diet_plan": "Diet Plan",
+        "btn_emergency": "Emergency",
+        "med_reminders": "Medicine Reminders",
+        "vitals_dash": "Vitals Dashboard",
+        "heart_rate": "Heart Rate",
+        "blood_pressure": "Blood Pressure",
+        "blood_sugar": "Blood Sugar",
+        "hemoglobin": "Hemoglobin",
+        "trends": "30-Day Trends",
+        "overview": "Overview",
+        "patients": "Patients",
+        "add_patient": "Add Patient",
+        "analytics": "Analytics"
+    },
+    hi: {
+        "nav_brand": "नेक्स्टस्टेप केयर",
+        "logout": "लॉग आउट",
+        "back": "वापस",
+        "tab_dashboard": "डैशबोर्ड",
+        "tab_diet": "आहार और देखभाल",
+        "tab_plans": "योजनाएं",
+        "tab_profile": "प्रोफ़ाइल जांच",
+        "btn_update_health": "स्वास्थ्य अपडेट",
+        "btn_diet_plan": "आहार योजना",
+        "btn_emergency": "आपातकालीन",
+        "med_reminders": "दवा अनुस्मारक",
+        "vitals_dash": "विटल्स डैशबोर्ड",
+        "heart_rate": "हृदय गति",
+        "blood_pressure": "रक्तचाप",
+        "blood_sugar": "रक्त शर्करा",
+        "hemoglobin": "हीमोग्लोबिन",
+        "trends": "30-दिन के रुझान",
+        "overview": "अवलोकन",
+        "patients": "मरीज़",
+        "add_patient": "मरीज़ जोड़ें",
+        "analytics": "एनालिटिक्स"
+    }
+};
+
+let currentLang = localStorage.getItem('appLang') || 'en';
+
+function toggleLanguage() {
+    currentLang = currentLang === 'en' ? 'hi' : 'en';
+    localStorage.setItem('appLang', currentLang);
+    applyTranslations();
+}
+
+function applyTranslations() {
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        if (translations[currentLang] && translations[currentLang][key]) {
+            if (element.children.length > 0 && element.querySelector('i')) {
+                const iconHTML = element.querySelector('i').outerHTML;
+                element.innerHTML = `${iconHTML} ${translations[currentLang][key]}`;
+            } else {
+                element.textContent = translations[currentLang][key];
+            }
+        }
+    });
+
+    const toggleBtn = document.getElementById('langToggleBtn');
+    if (toggleBtn) {
+        toggleBtn.textContent = currentLang === 'en' ? 'EN' : 'HI';
+    }
+}
+
+// ==========================================
 // 1. DATABASE INIT
 // ==========================================
 let appData = {
     users: [
-        { id: 1, name: 'Dr. Aman', email: 'aman@gmail.com', password: '123', type: 'doctor', specialization: 'Cardiologist', doctorId: 'DOC001' },
-        { id: 3, name: 'Ayush Sharma', email: 'ayush@gmail.com', password: '123', type: 'patient', patientId: 'PAT001' }
+        { id: 1, name: 'Dr. Aman', email: 'amxy1@gmail.com', password: '123', type: 'doctor', specialization: 'Cardiologist', doctorId: 'DOC001' },
+        { id: 3, name: 'Ayush Sharma', email: 'ayush0101@gmail.com', password: '123', type: 'patient', patientId: 'PAT001' }
     ],
     patients: [
         {
@@ -129,7 +208,6 @@ let appData = {
         }
     ]
 };
-
 // ==========================================
 // 2. CORE FUNCTIONS (Load, Save, Auth)
 // ==========================================
@@ -144,6 +222,7 @@ function saveData() {
 
 document.addEventListener('DOMContentLoaded', function() {
     loadData();
+    applyTranslations();
     
     const loginForm = document.getElementById('loginForm');
     if (loginForm) loginForm.addEventListener('submit', handleLogin);
@@ -312,24 +391,25 @@ function initPatientProfile() {
     const statusBadge = document.getElementById('healthStatus');
     statusBadge.textContent = patient.healthStatus.toUpperCase();
     
-    // Quick coloring fix for the profile tag based on status
     if (patient.healthStatus === 'stable') { statusBadge.style.background = '#dcfce7'; statusBadge.style.color = '#166534'; }
     else if (patient.healthStatus === 'moderate') { statusBadge.style.background = '#fef08a'; statusBadge.style.color = '#854d0e'; }
     else { statusBadge.style.background = '#fee2e2'; statusBadge.style.color = '#991b1b'; }
 
+    const lastVitals = patient.historicalVitals[patient.historicalVitals.length - 1];
+    
+    const patHR = document.getElementById('patHR');
+    if(patHR) patHR.textContent = lastVitals ? (lastVitals.hr || 75) : '--';
+
     document.getElementById('patBP').textContent = patient.currentBP;
     document.getElementById('patSugar').textContent = patient.bloodSugar;
-    document.getElementById('patHemo').textContent = patient.hemoglobin;
+    document.getElementById('patHemo').textContent = patient.hemoglobin; 
     document.getElementById('patAppt').textContent = new Date(patient.nextAppointment).toLocaleDateString();
 
-    // NEW: Handle Symptoms Tags
     const sympContainer = document.getElementById('patSymptomsContainer');
     if (sympContainer) {
         sympContainer.innerHTML = '';
-        const latestVitals = patient.historicalVitals[patient.historicalVitals.length - 1];
-        
-        if (latestVitals && latestVitals.symptoms && latestVitals.symptoms.trim() !== '') {
-            const symps = latestVitals.symptoms.split(','); // Split string by comma
+        if (lastVitals && lastVitals.symptoms && lastVitals.symptoms.trim() !== '') {
+            const symps = lastVitals.symptoms.split(','); 
             symps.forEach(s => {
                 if(s.trim()) {
                     sympContainer.innerHTML += `<span style="background: #fee2e2; color: #dc2626; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; border: 1px solid #fca5a5;"><i class="fas fa-exclamation-circle" style="margin-right: 4px;"></i> ${s.trim()}</span>`;
@@ -371,28 +451,12 @@ function initPatientProfile() {
 // ==========================================
 // 5. PATIENT DASHBOARD LOGIC
 // ==========================================
-// NEW: Upgraded Diet Plans with Specific Foods, Fruits, and Vegetables
 const diseasePlans = {
-    'cardiac': { 
-        diet: '<strong>Focus on heart health (Low Sodium, Low Fat):</strong><br>• <strong>Vegetables:</strong> Spinach, kale, broccoli, carrots.<br>• <strong>Fruits:</strong> Berries (blueberries, strawberries), apples, oranges.<br>• <strong>Grains & Protein:</strong> Oats, brown rice, grilled fish, beans, and unsalted nuts.', 
-        activity: '30 minutes of brisk walking daily. Avoid heavy lifting.' 
-    },
-    'diabetes': { 
-        diet: '<strong>Focus on blood sugar control (Low Carb, High Fiber):</strong><br>• <strong>Vegetables:</strong> Bitter gourd, leafy greens, cauliflower, tomatoes.<br>• <strong>Fruits:</strong> Guava, green apples, papaya (in moderation).<br>• <strong>Grains & Protein:</strong> Quinoa, lentils, almonds, chia seeds, and lean chicken.', 
-        activity: 'Post-meal light walking. Moderate aerobic exercise 4 times a week.' 
-    },
-    'hypertension': { 
-        diet: '<strong>Focus on BP reduction (DASH Diet, Strictly Limit Salt):</strong><br>• <strong>Vegetables:</strong> Beetroot, spinach, garlic, sweet potatoes.<br>• <strong>Fruits:</strong> Bananas, oranges, pomegranate.<br>• <strong>Grains & Protein:</strong> Low-fat yogurt, unsalted pumpkin seeds, whole wheat.', 
-        activity: 'Yoga, meditation, and 40 minutes of moderate cardiovascular exercise.' 
-    },
-    'c-section': { 
-        diet: '<strong>Focus on healing and recovery (High Iron & Protein):</strong><br>• <strong>Vegetables:</strong> Spinach, lentils, fenugreek leaves (methi).<br>• <strong>Fruits:</strong> Sweet lime, oranges, apples (rich in Vitamin C for tissue repair).<br>• <strong>Grains & Protein:</strong> Eggs, lean meat, milk, and high hydration.', 
-        activity: 'Short, slow walks. Absolutely no heavy lifting or abdominal strain.' 
-    },
-    'default': { 
-        diet: '<strong>Focus on general wellness:</strong><br>• <strong>Vegetables:</strong> Mixed seasonal vegetables, cucumber, tomatoes.<br>• <strong>Fruits:</strong> Seasonal fruits like apples, papaya, and bananas.<br>• <strong>Grains & Protein:</strong> Balanced dal, rice/roti, and high water intake.', 
-        activity: 'Light daily stretching and 20 minute walks.' 
-    }
+    'cardiac': { diet: '<strong>Focus on heart health:</strong><br>• <strong>Vegetables:</strong> Spinach, broccoli.<br>• <strong>Fruits:</strong> Berries, oranges.', activity: '30 minutes of brisk walking daily. Avoid heavy lifting.' },
+    'diabetes': { diet: '<strong>Focus on blood sugar control:</strong><br>• <strong>Vegetables:</strong> Bitter gourd, leafy greens.<br>• <strong>Fruits:</strong> Guava, green apples.', activity: 'Post-meal light walking. Moderate aerobic exercise.' },
+    'hypertension': { diet: '<strong>Focus on BP reduction:</strong><br>• <strong>Vegetables:</strong> Beetroot, sweet potatoes.<br>• <strong>Fruits:</strong> Bananas, pomegranate.', activity: 'Yoga, meditation, and 40 minutes of cardio.' },
+    'c-section': { diet: '<strong>Focus on healing and recovery:</strong><br>• <strong>Vegetables:</strong> Spinach, lentils.<br>• <strong>Fruits:</strong> Sweet lime, oranges.', activity: 'Short, slow walks. No heavy lifting.' },
+    'default': { diet: '<strong>Focus on general wellness:</strong><br>• <strong>Vegetables:</strong> Mixed seasonal vegetables.<br>• <strong>Fruits:</strong> Seasonal fruits.', activity: 'Light daily stretching and 20 minute walks.' }
 };
 
 function setupPatientDashboard() {
@@ -403,14 +467,19 @@ function setupPatientDashboard() {
 
     const patient = appData.patients.find(p => p.id === currentUser.patientId);
     if (!patient) return;
-
+    
+    document.getElementById('patientName').textContent = patient.name;
     document.getElementById('dashBP').textContent = patient.currentBP || '--';
     document.getElementById('dashSugar').textContent = patient.bloodSugar || '--';
+    
     const lastVitals = patient.historicalVitals[patient.historicalVitals.length - 1];
     document.getElementById('dashHR').textContent = lastVitals ? (lastVitals.hr || 75) + ' bpm' : '--';
+    
+    const dashHemo = document.getElementById('dashHemo');
+    if(dashHemo) dashHemo.textContent = (lastVitals && lastVitals.hemo ? lastVitals.hemo : patient.hemoglobin || '--') + ' g/dL';
 
     const plan = diseasePlans[patient.primaryDisease.toLowerCase()] || diseasePlans['default'];
-    document.getElementById('dietPlanContent').innerHTML = plan.diet; // Changed to innerHTML to render bold tags
+    document.getElementById('dietPlanContent').innerHTML = plan.diet; 
     document.getElementById('activityPlanContent').textContent = plan.activity;
 
     renderMedicines(patient);
@@ -420,15 +489,10 @@ function setupPatientDashboard() {
 function renderMedicines(patient) {
     const medList = document.getElementById('medicineList');
     medList.innerHTML = '';
-    
-    let takenCount = 0;
-    let missedMed = null;
-
+    let takenCount = 0; let missedMed = null;
     patient.medicines.forEach((med, index) => {
         const isTaken = med.taken || false; 
-        if (isTaken) takenCount++;
-        else missedMed = med.name; 
-
+        if (isTaken) takenCount++; else missedMed = med.name; 
         medList.innerHTML += `
             <div class="med-card ${isTaken ? 'taken' : ''}" style="display: flex; justify-content: space-between; align-items: center; padding: 15px; margin-bottom: 10px;">
                 <div>
@@ -441,32 +505,25 @@ function renderMedicines(patient) {
             </div>
         `;
     });
-
     const total = patient.medicines.length;
     document.getElementById('medProgressText').textContent = `${takenCount}/${total} taken`;
     document.getElementById('medProgressBar').style.width = total === 0 ? '0%' : `${(takenCount/total)*100}%`;
-
     const alertBox = document.getElementById('missedDosageAlert');
     if (takenCount < total && missedMed) {
         alertBox.style.display = 'flex';
         document.getElementById('missedMedicineName').textContent = `${missedMed} was not marked as taken.`;
-    } else {
-        alertBox.style.display = 'none';
-    }
+    } else { alertBox.style.display = 'none'; }
 }
 
 function toggleMedicine(patientId, medIndex) {
     const patient = appData.patients.find(p => p.id === patientId);
     patient.medicines[medIndex].taken = !patient.medicines[medIndex].taken;
-    saveData();
-    renderMedicines(patient);
+    saveData(); renderMedicines(patient);
 }
 
 function triggerEmergency() {
     const confirmSOS = confirm("🚨 URGENT: Do you need to call an ambulance and alert your doctor immediately?");
-    if(confirmSOS) {
-        alert("Ambulance dispatched. Doctor has been notified via priority alert.");
-    }
+    if(confirmSOS) alert("Ambulance dispatched. Doctor has been notified via priority alert.");
 }
 
 function handleHealthUpdate(e) {
@@ -477,22 +534,17 @@ function handleHealthUpdate(e) {
     const bp = document.getElementById('bp').value;
     const hr = parseInt(document.getElementById('hr').value);
     const sugar = parseInt(document.getElementById('sugar').value);
-    
-    // NEW: Grab symptoms value (if any)
+    const hemo = parseFloat(document.getElementById('hemoInput').value); 
     const symptomsInput = document.getElementById('symptoms');
     const symptoms = symptomsInput ? symptomsInput.value : '';
 
     patient.currentBP = bp;
     patient.bloodSugar = sugar;
+    patient.hemoglobin = hemo; 
     
     const today = new Date().toLocaleDateString('en-US', { weekday: 'short' });
     patient.historicalVitals.push({
-        date: today,
-        sugar: sugar,
-        hr: hr,
-        systolic: parseInt(bp.split('/')[0]),
-        diastolic: parseInt(bp.split('/')[1]),
-        symptoms: symptoms // NEW: Save symptoms into historical records
+        date: today, sugar: sugar, hr: hr, systolic: parseInt(bp.split('/')[0]), diastolic: parseInt(bp.split('/')[1]), symptoms: symptoms, hemo: hemo 
     });
 
     saveData(); 
@@ -516,21 +568,7 @@ function renderSplitCharts(patient, context = 'patient') {
     const dates = patient.historicalVitals.map(v => v.date);
     const chartOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { border: { display: false } } } };
 
-    let canvasHR = 'chartHR', canvasBP = 'chartBP', canvasSugar = 'chartSugar';
-    if(context === 'doctor' || context === 'doctorSingle') {
-        const oldChartCtx = document.getElementById('healthTrendChart');
-        if(oldChartCtx) {
-             if (window['oldChartInstance']) window['oldChartInstance'].destroy();
-             window['oldChartInstance'] = new Chart(oldChartCtx, {
-                type: 'line',
-                data: { labels: dates, datasets: [{ label: 'Blood Sugar', data: patient.historicalVitals.map(v => v.sugar), borderColor: '#f97316', tension: 0.4 }, { label: 'Systolic BP', data: patient.historicalVitals.map(v => v.systolic), borderColor: '#e11d48', tension: 0.4 }] },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-            return; 
-        }
-    }
-
-    const ctxHR = document.getElementById(canvasHR);
+    const ctxHR = document.getElementById('chartHR');
     if (ctxHR) {
         if(window['chartHRInstance']) window['chartHRInstance'].destroy();
         window['chartHRInstance'] = new Chart(ctxHR, {
@@ -540,7 +578,7 @@ function renderSplitCharts(patient, context = 'patient') {
         });
     }
 
-    const ctxBP = document.getElementById(canvasBP);
+    const ctxBP = document.getElementById('chartBP');
     if (ctxBP) {
         if(window['chartBPInstance']) window['chartBPInstance'].destroy();
         window['chartBPInstance'] = new Chart(ctxBP, {
@@ -553,7 +591,7 @@ function renderSplitCharts(patient, context = 'patient') {
         });
     }
 
-    const ctxSugar = document.getElementById(canvasSugar);
+    const ctxSugar = document.getElementById('chartSugar');
     if (ctxSugar) {
         if(window['chartSugarInstance']) window['chartSugarInstance'].destroy();
         window['chartSugarInstance'] = new Chart(ctxSugar, {
@@ -562,4 +600,85 @@ function renderSplitCharts(patient, context = 'patient') {
             options: chartOptions
         });
     }
+
+    const ctxHemo = document.getElementById('chartHemo');
+    if (ctxHemo) {
+        if(window['chartHemoInstance']) window['chartHemoInstance'].destroy();
+        window['chartHemoInstance'] = new Chart(ctxHemo, {
+            type: 'line',
+            data: { 
+                labels: dates, 
+                datasets: [{ 
+                    data: patient.historicalVitals.map(v => v.hemo || patient.hemoglobin),
+                    borderColor: '#8b5cf6', 
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)', 
+                    fill: true, 
+                    tension: 0.4 
+                }] 
+            },
+            options: chartOptions
+        });
+    }
 }
+
+// ==========================================
+// 7. ADVANCED NEW FEATURES LOGIC
+// ==========================================
+function scheduleTelemedicine() {
+    const dateTime = document.getElementById('telemedDateTime').value;
+    if (!dateTime) return alert("Please select a date and time for the consultation.");
+    let toast = document.getElementById('toastNotification');
+    if (!toast) {
+        toast = document.createElement('div'); toast.id = 'toastNotification';
+        toast.style.cssText = "position: fixed; bottom: 30px; right: 30px; background: #10b981; color: white; padding: 15px 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); font-weight: 600; z-index: 1001; display: flex; align-items: center; gap: 12px;";
+        document.body.appendChild(toast);
+    }
+    toast.innerHTML = `<i class="fas fa-video"></i> <span>Telemedicine link sent to patient for ${new Date(dateTime).toLocaleString()}</span>`;
+    toast.style.display = 'flex'; setTimeout(() => { toast.style.display = 'none'; }, 4000);
+    document.getElementById('telemedDateTime').value = '';
+}
+
+function addNewMedicine() {
+    const name = document.getElementById('newMedName').value; const dosage = document.getElementById('newMedDosage').value; const time = document.getElementById('newMedTime').value;
+    if(!name || !dosage || !time) return alert("Please fill all medicine fields.");
+    const urlParams = new URLSearchParams(window.location.search); const patientId = urlParams.get('id');
+    const patient = appData.patients.find(p => p.id === patientId);
+    if(patient) {
+        patient.medicines.push({ name, dosage, time, taken: false });
+        saveData(); alert("Prescription added successfully!");
+        document.getElementById('newMedName').value = ''; document.getElementById('newMedDosage').value = ''; document.getElementById('newMedTime').value = '';
+        initPatientProfile(); 
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if(!currentUser) return;
+    const docProfile = document.getElementById('doctorProfileDetails');
+    if(docProfile && currentUser.type === 'doctor') {
+        docProfile.innerHTML = `<div><p style="color:#64748b; font-size:0.9rem;">Full Name</p><h3 style="color:#1e3c72;">${currentUser.name}</h3></div><div><p style="color:#64748b; font-size:0.9rem;">Email Address</p><h3 style="color:#1e3c72;">${currentUser.email}</h3></div><div><p style="color:#64748b; font-size:0.9rem;">Doctor ID</p><h3 style="color:#1e3c72;">${currentUser.doctorId}</h3></div><div><p style="color:#64748b; font-size:0.9rem;">Specialization</p><h3 style="color:#1e3c72;">${currentUser.specialization || 'General'}</h3></div>`;
+    }
+    const patProfile = document.getElementById('patientProfileDetails');
+    if(patProfile && currentUser.type === 'patient') {
+        const patientData = appData.patients.find(p => p.id === currentUser.patientId);
+        if(patientData) {
+            patProfile.innerHTML = `<div class="detail-card"><p style="color:#64748b;">Full Name</p><h3>${patientData.name}</h3></div><div class="detail-card"><p style="color:#64748b;">Patient ID</p><h3>${patientData.id}</h3></div><div class="detail-card"><p style="color:#64748b;">Age & Gender</p><h3>${patientData.age} Yrs, ${patientData.gender}</h3></div><div class="detail-card"><p style="color:#64748b;">Primary Diagnosis</p><h3 style="text-transform: capitalize;">${patientData.primaryDisease}</h3></div>`;
+        }
+    }
+});
+
+function toggleChat() { const box = document.getElementById('chatBox'); box.style.display = box.style.display === 'none' ? 'flex' : 'none'; }
+function sendChatMessage() {
+    const input = document.getElementById('chatInput'); const msg = input.value.trim(); if(!msg) return;
+    const chatBox = document.getElementById('chatMessages');
+    chatBox.innerHTML += `<div style="background: #0284c7; color: white; padding: 10px 15px; border-radius: 15px 15px 0 15px; max-width: 80%; font-size: 0.9rem; align-self: flex-end;">${msg}</div>`;
+    input.value = ''; chatBox.scrollTop = chatBox.scrollHeight;
+    setTimeout(() => {
+        let reply = "Please remember I am an AI assistant, not a doctor. Based on general guidelines, staying hydrated and taking your prescribed medications on time is highly recommended. Always consult your doctor for medical advice!";
+        if(msg.toLowerCase().includes("headache")) reply = "For a headache, resting in a quiet, dark room and staying hydrated can help. If it persists, please use the SOS button to contact your doctor.";
+        if(msg.toLowerCase().includes("diet")) reply = "You can view your personalized diet recommendations under the 'Diet & Care' tab on your dashboard!";
+        chatBox.innerHTML += `<div style="background: #e2e8f0; color: #1e293b; padding: 10px 15px; border-radius: 15px 15px 15px 0; max-width: 80%; font-size: 0.9rem; align-self: flex-start;">${reply}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 1000);
+}
+document.addEventListener('DOMContentLoaded', () => { const chatInput = document.getElementById('chatInput'); if(chatInput) { chatInput.addEventListener('keypress', function (e) { if (e.key === 'Enter') sendChatMessage(); }); } });
