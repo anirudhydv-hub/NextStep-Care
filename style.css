@@ -228,7 +228,6 @@ th { color: #6b7280; font-weight: 500; font-size: 0.9rem; }
 }
 .recovery-circle::before { content: "82"; transform: rotate(-45deg); }
 
-/* Login Elements */
 .login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;}
 .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); width: 100%; max-width: 400px; text-align: center;}
 
@@ -244,4 +243,26 @@ th { color: #6b7280; font-weight: 500; font-size: 0.9rem; }
     }
     .sidebar a.active { border-left: none; border-bottom-color: #0056b3; background: transparent; }
     .form-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+}
+
+/* ================= Custom Language Toggle Button ================= */
+.lang-toggle-btn {
+    background-color: #1e3c72; 
+    color: #ffffff; 
+    border: none;
+    border-radius: 8px; 
+    padding: 6px 12px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 15px;
+    min-width: 45px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.lang-toggle-btn:hover {
+    background-color: #0f172a; 
+    transform: translateY(-1px);
 }
