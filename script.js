@@ -3,7 +3,7 @@
 // ==========================================
 const translations = {
     en: {
-        "nav_brand": "NextStep Care",
+        
         "logout": "Logout",
         "back": "Back",
         "tab_dashboard": "Dashboard",
@@ -26,7 +26,7 @@ const translations = {
         "analytics": "Analytics"
     },
     hi: {
-        "nav_brand": "नेक्स्टस्टेप केयर",
+        
         "logout": "लॉग आउट",
         "back": "वापस",
         "tab_dashboard": "डैशबोर्ड",
@@ -452,7 +452,7 @@ function initPatientProfile() {
 // 5. PATIENT DASHBOARD LOGIC
 // ==========================================
 const diseasePlans = {
-    'cardiac': { diet: '<strong>Focus on heart health:</strong><br>• <strong>Vegetables:</strong> Spinach, broccoli.<br>• <strong>Fruits:</strong> Berries, oranges.', activity: '30 minutes of brisk walking daily. Avoid heavy lifting.' },
+    'cardiac': { diet: '<strong>Focus on heart health:</strong><br>• <strong>Vegetables:</strong> Spinach, broccoli,Mixed seasonal vegetables.<br>• <strong>Fruits:</strong> Berries, oranges,Seasonal fruits.', activity: '30 minutes of brisk walking daily, Yoga, meditation, and 40 minutes of cardio.Avoid heavy lifting' },
     'diabetes': { diet: '<strong>Focus on blood sugar control:</strong><br>• <strong>Vegetables:</strong> Bitter gourd, leafy greens.<br>• <strong>Fruits:</strong> Guava, green apples.', activity: 'Post-meal light walking. Moderate aerobic exercise.' },
     'hypertension': { diet: '<strong>Focus on BP reduction:</strong><br>• <strong>Vegetables:</strong> Beetroot, sweet potatoes.<br>• <strong>Fruits:</strong> Bananas, pomegranate.', activity: 'Yoga, meditation, and 40 minutes of cardio.' },
     'c-section': { diet: '<strong>Focus on healing and recovery:</strong><br>• <strong>Vegetables:</strong> Spinach, lentils.<br>• <strong>Fruits:</strong> Sweet lime, oranges.', activity: 'Short, slow walks. No heavy lifting.' },
