@@ -25,9 +25,6 @@ The application was designed with **Glassmorphism** and a calming blue color pal
 
 ## 📸 Screenshots
 
-* **Doctor Dashboard:** [<img width="1864" height="898" alt="1st zdoc" src="https://github.com/user-attachments/assets/124b2f4d-a2ae-4a8b-b564-6b4cddd02360" />
-]
-* **Real-time Patient Vitals (Chart.js):** [<img width="1893" height="904" alt="image" src="https://github.com/user-attachments/assets/ff382d16-011b-4944-8ccd-17c2748ee128" />
-]
-* **Hindi Localization View:** [<img width="1917" height="911" alt="image" src="https://github.com/user-attachments/assets/00476b9c-8235-4367-be0f-13e9a3f0d9e9" />
-]
+* **Doctor Dashboard:** <img width="1864" height="898" alt="1st zdoc" src="https://github.com/user-attachments/assets/124b2f4d-a2ae-4a8b-b564-6b4cddd02360" />
+* **Real-time Patient Vitals (Chart.js):**<img width="1893" height="904" alt="image" src="https://github.com/user-attachments/assets/ff382d16-011b-4944-8ccd-17c2748ee128" />
+* **Hindi Localization View:** <img width="1917" height="911" alt="image" src="https://github.com/user-attachments/assets/00476b9c-8235-4367-be0f-13e9a3f0d9e9" />
